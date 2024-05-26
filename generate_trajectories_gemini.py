@@ -23,16 +23,17 @@ envs_bagel = {'click-checkboxes-soft':10,
  'choose-date':20,
  'search-engine':20}
 
+
 SAVE_TO_FOLDER = 'trajectories_gemini'
 
 MAX_STEPS = 14
 
-project_id = "cs236-407017"
+project_id = "cs224n-420704"
 aiplatform.init(project=project_id)
 vertexai.preview.init()
 model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")
 client = storage.Client()
-bucket = client.get_bucket('bagel')
+bucket = client.get_bucket('bagel-ft')
 
 def create_prompt1(goal,dom):
 
@@ -206,6 +207,7 @@ def perform_tasks(env_type,env_time):
     previous_action = ''
     previous_ref = 0
     reward = None
+    response = ''
     d_response = {'action':'', 'ref':0, 'text':'', 'action_text':''}
     
     actions.append('')
@@ -242,7 +244,7 @@ def perform_tasks(env_type,env_time):
     chat = model.start_chat()
     while not info['done']:
         
-        if count > MAX_STEPS or time.time()-start_time >= env_time:
+        if count > MAX_STEPS or time.time()-start_time >= env_time or 'Done: True' in response:
             break
         count,times = init_step(count,times)
         
@@ -252,8 +254,7 @@ def perform_tasks(env_type,env_time):
         print('RESPONSE:')
         print(response)
         
-        if 'Done: True' in response:
-            break
+        
         response = check_response(response, '''Please make sure your answer is in the following format:
             
             Action description:
@@ -270,11 +271,24 @@ def perform_tasks(env_type,env_time):
             if d_response['action'] != 'CLICK_ELEMENT':#and previous_ref == d_response['ref']):
                 reminder = '''Don't forget to click 
             on the text field after you enter text, to get autocomplete options.'''
+                print(reminder)
+                response = chat.send_message(reminder).text
                 response = check_response(response, reminder)
+                d_response = parse_response(response)
+        
 
         d_response = parse_response(response)
         print(d_response)
-            
+        
+        if d_response['action'] == 'TYPE_TEXT':
+            if previous_action != 'CLICK_ELEMENT':#and previous_ref == d_response['ref']):
+                reminder = '''Don't forget to click on the text field before and after you enter text.'''
+                print(reminder)
+                response = chat.send_message(reminder).text
+                print(response)
+                response = check_response(response, reminder)
+                d_response = parse_response(response)
+        
         reward = perform_action(d_response['action'], d_response['ref'], d_response['text'].replace('"',''))   
         actions.append(d_response['action_text']) 
         print('reward',reward)
