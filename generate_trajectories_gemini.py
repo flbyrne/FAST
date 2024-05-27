@@ -32,7 +32,7 @@ project_id = "cs224n-420704"
 aiplatform.init(project=project_id)
 vertexai.preview.init()
 model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")
-client = storage.Client()
+client = storage.Client(project=project_id)
 bucket = client.get_bucket('bagel-ft')
 
 def create_prompt1(goal,dom):
