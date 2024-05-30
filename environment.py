@@ -29,7 +29,7 @@ class MiniWoBEnvironment(gym.Env):
         action_space_config: Union[str, ActionSpaceConfig] = "all_supported",
         field_extractor: Optional[FieldExtractor] = None,
         reward_processor: Optional[RewardProcessor] = None,
-        wait_ms: float = 100,
+        wait_ms: float = 500,
         block_on_reset: bool = True,
         refresh_freq: int = 0,
         data_mode: str = "train",
