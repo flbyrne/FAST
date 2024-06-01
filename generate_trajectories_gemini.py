@@ -25,6 +25,7 @@ envs_bagel = {'click-checkboxes-soft':10,
 
 
 SAVE_TO_FOLDER = 'trajectories_gemini'
+BUCKET = 'miniwobimages'
 
 MAX_STEPS = 14
 
@@ -33,7 +34,7 @@ aiplatform.init(project=project_id)
 vertexai.preview.init()
 model = GenerativeModel(model_name="gemini-1.5-pro-preview-0514")
 client = storage.Client(project=project_id)
-bucket = client.get_bucket('bagel-ft')
+bucket = client.get_bucket(BUCKET)
 
 def create_prompt1(goal,dom):
 
@@ -149,7 +150,7 @@ def assemble_prompt(goal, actions, dom, image):
         part1,part2,part3 = create_prompt1(goal, dom)
     convert_to_image(image)
     return [Part.from_text(part1)
-            , Part.from_uri("gs://bagel/image.png",mime_type="image/png")
+            , Part.from_uri("gs://{}/image.png".format(BUCKET),mime_type="image/png")
             , Part.from_text(part2)
             , Part.from_text(part3)]
 
