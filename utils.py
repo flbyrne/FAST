@@ -38,6 +38,11 @@ def search_page(text, dom):
             return element['ref']
     return 0
 
+def search_item(text, cls, dom):
+    for element in dom:
+        if element['classes'] ==cls and  element['text'] == text:
+            return element['ref']
+    return 0
         
 def save_trajectory(folder, actions, doms, images, times, env_type, reward, utterance=''):
     traj = {}
