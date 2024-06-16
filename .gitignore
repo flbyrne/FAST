@@ -1,2 +1,4 @@
 config.yaml
+client_secret.json
+*.zip
 

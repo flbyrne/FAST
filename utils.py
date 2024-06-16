@@ -15,6 +15,11 @@ def prompt_together(model, api_key, prompt):
     )
     return response.choices[0].message.content
 
+def find_by_id(id_, dom):
+    for element in dom:
+        if element['id'] == id_:
+            return element['ref']
+
 def find_ref(dom, s):
     for element in dom:
         if element['text'] == s:
@@ -43,7 +48,48 @@ def search_item(text, cls, dom):
         if element['classes'] ==cls and  element['text'] == text:
             return element['ref']
     return 0
-        
+
+def ref2classes(ref, dom):
+    for element in dom:
+        if element['ref'] == ref:
+            return element['classes']
+
+def count_search_results(dom):
+    count = 0
+    for element in dom:
+        if element['classes'] =='search-title':
+            count += 1
+    return count
+    
+
+def remove_nonessentials(dom):
+    elements = []
+    for e in dom:
+        element = e.copy()
+        del element['fg_color']
+        del element['bg_color']
+        del element['flags']
+        element['left'] = int(element['left'][0])
+        element['top'] = int(element['top'][0])
+        element['height'] = int(element['height'][0])
+        element['width'] = int(element['width'][0])
+        elements.append(element)
+    return elements
+
+def remove_nonessentials_sms(dom):
+    elements = []
+    for e in dom:
+        element = e.copy()
+        element['fg_color'] = rgba_to_hex_color(element['fg_color'])
+        element['bg_color'] = rgba_to_hex_color(element['bg_color'])
+        element['flags'] = element['flags'].astype(int)
+        element['left'] = int(element['left'][0])
+        element['top'] = int(element['top'][0])
+        element['height'] = int(element['height'][0])
+        element['width'] = int(element['width'][0])
+        elements.append(element)
+    return elements
+
 def save_trajectory(folder, actions, doms, images, times, env_type, reward, utterance=''):
     traj = {}
     traj['utterance'] = utterance
