@@ -6,3 +6,5 @@ We propose a method for programmatically defining synthetic trajectories using M
 ### Results
 
 ![Experiment Results](images/results.png)
+
+[Link to Paper](https://web.stanford.edu/class/cs224n/final-reports/256984105.pdf)
